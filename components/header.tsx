@@ -1,14 +1,12 @@
-import Link from 'next/link'
+import Link from "next/link";
 
 const Header = () => {
   return (
-    <h2 className="text-2xl md:text-4xl font-bold tracking-tight md:tracking-tighter leading-tight mb-20 mt-8">
-      <Link href="/" className="hover:underline">
-        Blog
-      </Link>
-      .
-    </h2>
-  )
-}
+    <section className="px-4 border-b py-4 bg-white mb flex justify-between">
+      <div className="font-medium">SF Agora</div>
+      <div className="text-stone-600">Legislations</div>
+    </section>
+  );
+};
 
-export default Header
+export default Header;
