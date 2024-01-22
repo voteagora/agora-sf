@@ -33,7 +33,8 @@ export default function ItemPage({
 
   let lastVote;
   if (!emptyActions) {
-    lastVote = actionsData.find((action) => action.votes.length !== 0) || EMPTY_ACTION;
+    lastVote =
+      actionsData.find((action) => action.votes.length !== 0) || EMPTY_ACTION;
   }
 
   return (
@@ -80,14 +81,13 @@ export default function ItemPage({
             this legislation, which you can find below.
           </div>
         </section>
-        {!emptyActions &&
-        <section className="mx-4 mb-8 mt-4 flex flex-col gap-2 rounded-lg border bg-white p-4">
-          <div className="text-sm text-stone-600">
-            How the board voted on the latest version
-          </div>
+        {!emptyActions && (
+          <section className="mx-4 mb-8 mt-4 flex flex-col gap-2 rounded-lg border bg-white p-4">
+            <div className="text-sm text-stone-600">
+              How the board voted on the latest version
+            </div>
 
-          
-            lastVote.votes.map((vote, index) => (
+            {lastVote.votes.map((vote, index) => (
               <div
                 key={index}
                 className="flex justify-between text-sm font-medium"
@@ -101,8 +101,9 @@ export default function ItemPage({
                   {vote.vote}
                 </span>
               </div>
-            ))
-        </section>}
+            ))}
+          </section>
+        )}
       </Container>
     </Layout>
   );
