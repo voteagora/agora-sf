@@ -28,22 +28,31 @@ export default function Index({ allPosts, meetingsData }: Props) {
           <Header />
           {meetingsData.map((meeting, i) => (
             <div key={i}>
-              <div className="border-b px-4 text-stone-600 font-medium py-2 text-sm">
+              <div className="border-b px-4 py-2 text-sm font-medium text-stone-600">
                 On November 14 2023, the Board voted
               </div>
-              {meeting.map((item, j) => (
-                <Link as={`/items/${item["File #"]}`} href={"/items/[id]"}>
-                  <div key={item["File #"]} className="border-b bg-white px-4 py-4">
-                    <p className="text-xs font-medium uppercase text-green-600">
-                      {item.Status}
-                    </p>
-                    <h2 className="line-clamp-1 font-medium">{item.Name}</h2>
-                    <div className="line-clamp-2 text-stone-600">
-                      {item.Title}
-                    </div>
-                  </div>
-                </Link>
-              ))}
+              {meeting.some((item) => item.Type === "Ordinance") ? (
+                meeting.map((item, j) => (
+                  item.Type === "Ordinance" && (
+                    <Link as={`/items/${item["File #"]}`} href={"/items/[id]"}>
+                      <div
+                        key={item["File #"]}
+                        className="border-b bg-white px-4 py-4"
+                      >
+                        <p className={`text-xs font-medium uppercase ${item.Status === "Passed" ? "text-green-600" : "text-stone-600"}`}>
+                          {item.Status}
+                        </p>
+                        <h2 className="line-clamp-1 font-medium">{item.Name}</h2>
+                        <div className="line-clamp-2 text-stone-600">
+                          {item.Title}
+                        </div>
+                      </div>
+                    </Link>
+                  )
+                ))
+              ) : (
+                <div className="text-stone-600 bg-white px-4 py-4">No ordinances at this meeting</div>
+              )}
             </div>
           ))}
         </Container>
@@ -76,6 +85,7 @@ export const getStaticProps = async () => {
       return response.json();
     }),
   );
+  console.log(meetingsData);
 
   return {
     props: { allPosts, meetingsData },
