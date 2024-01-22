@@ -11,6 +11,7 @@ import path from "path";
 import fetch from "node-fetch";
 import Link from "next/link";
 import Header from "../components/header";
+import { extractAndFormatDate } from "../lib/dates";
 
 type Props = {
   allPosts: Post[];
@@ -28,12 +29,15 @@ export default function Index({ allPosts, meetingsData }: Props) {
           <Header />
           {meetingsData.map((meeting, i) => (
             <div key={i}>
-              <div className="border-b px-4 text-stone-600 font-medium py-2 text-sm">
-                On November 14 2023, the Board voted
+              <div className="border-b px-4 py-2 text-sm font-medium text-stone-600">
+                On {meeting.meetingDate}, the Board voted
               </div>
-              {meeting.map((item, j) => (
+              {meeting.files.map((item, j) => (
                 <Link as={`/items/${item["File #"]}`} href={"/items/[id]"}>
-                  <div key={item["File #"]} className="border-b bg-white px-4 py-4">
+                  <div
+                    key={item["File #"]}
+                    className="border-b bg-white px-4 py-4"
+                  >
                     <p className="text-xs font-medium uppercase text-green-600">
                       {item.Status}
                     </p>
@@ -69,11 +73,24 @@ export const getStaticProps = async () => {
   );
   const urls = JSON.parse(data);
 
-  // Fetch data from each URL
+  // sort urls in reverse chronological order
+  const sortedUrls = urls.sort((a, b) => {
+    const aDate = new Date(extractAndFormatDate(a));
+    const bDate = new Date(extractAndFormatDate(b));
+    return bDate.getTime() - aDate.getTime();
+  });
+
+  // Fetch a list of files from each meeting URL
   const meetingsData = await Promise.all(
-    urls.map(async (url) => {
+    sortedUrls.map(async (url) => {
       const response = await fetch(url);
-      return response.json();
+      const files: any[] = (await response.json()) as any[];
+      const meetingDate = extractAndFormatDate(url);
+
+      return {
+        files,
+        meetingDate,
+      };
     }),
   );
 

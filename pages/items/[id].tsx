@@ -107,7 +107,9 @@ export async function getStaticProps({ params }) {
 
   // Fetch data from each URL
   const fileData = await fetch(fileURL).then((res) => res.json());
-  const actionsData = await fetch(actionsURL).then((res) => res.json());
+  const actionsData = await fetch(actionsURL)
+    .then((res) => res.json())
+    .catch(() => [EMPTY_ACTION]);
   const chatgptData = await fetch(chatgptURL)
     .then((res) => res.json())
     .catch(() => EMPTY_CHATGPT_RESPONSE); // if chatgpt summary doesn't exist, just return empty summary
