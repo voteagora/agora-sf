@@ -1,9 +1,9 @@
 import Layout from "../../components/layout";
 import Container from "../../components/container";
-import { useRouter } from "next/router";
 import fs from "fs";
 import path from "path";
 import Header from "../../components/header";
+import Footer from "../../components/footer";
 
 type Props = {
   fileData: any;
@@ -29,8 +29,20 @@ export default function ItemPage({
   actionsData,
   chatgptData,
 }: Props) {
-  const lastVote =
-    actionsData.find((action) => action.votes.length !== 0) || EMPTY_ACTION;
+  const emptyActions = actionsData.length === undefined;
+  // Verify that every element in chatgptData is a string
+  Object.keys(chatgptData).forEach((key) => {
+    if (typeof chatgptData[key] !== "string") {
+      chatgptData[key] = "N/A";
+    }
+  });
+
+  let lastVote;
+  if (!emptyActions) {
+    lastVote =
+      actionsData.find((action) => action.votes.length !== 0) || EMPTY_ACTION;
+  }
+
   return (
     <Layout>
       <Container>
@@ -38,9 +50,13 @@ export default function ItemPage({
         <section className="mx-4 mt-4">
           <div className="text-sm font-medium text-stone-600">
             <span>Latest status: </span>
-            <span className="lowercase">
-              {actionsData[0]["action"]} by {actionsData[0]["actionBy"]}
-            </span>
+            {emptyActions ? (
+              <span>Undefined</span>
+            ) : (
+              <span className="lowercase">
+                {actionsData[0]["action"]} by {actionsData[0]["actionBy"]}
+              </span>
+            )}
           </div>
           <div className="text-xl font-extrabold">{fileData["Name"]}</div>
         </section>
@@ -71,26 +87,30 @@ export default function ItemPage({
             this legislation, which you can find below.
           </div>
         </section>
-        <section className="mx-4 mb-8 mt-4 flex flex-col gap-2 rounded-lg border bg-white p-4">
-          <div className="text-sm text-stone-600">
-            How the board voted on the latest version
-          </div>
-          {lastVote.votes.map((vote, index) => (
-            <div
-              key={index}
-              className="flex justify-between text-sm font-medium"
-            >
-              <span>{vote.person}</span>
-              <span
-                className={
-                  vote.vote === "No" ? "text-red-600" : "text-green-600"
-                }
-              >
-                {vote.vote}
-              </span>
+        {!emptyActions && (
+          <section className="mx-4 mb-8 mt-4 flex flex-col gap-2 rounded-lg border bg-white p-4">
+            <div className="text-sm text-stone-600">
+              How the board voted on the latest version
             </div>
-          ))}
-        </section>
+
+            {lastVote.votes.map((vote, index) => (
+              <div
+                key={index}
+                className="flex justify-between text-sm font-medium"
+              >
+                <span>{vote.person}</span>
+                <span
+                  className={
+                    vote.vote === "No" ? "text-red-600" : "text-green-600"
+                  }
+                >
+                  {vote.vote}
+                </span>
+              </div>
+            ))}
+          </section>
+        )}
+        <Footer />
       </Container>
     </Layout>
   );
@@ -106,15 +126,18 @@ export async function getStaticProps({ params }) {
   const chatgptURL = `${server}/chatgpt/${id}.json`;
 
   // Fetch data from each URL
-  const fileData = await fetch(fileURL).then((res) => res.json());
+  const fileData = await fetch(fileURL)
+    .then((res) => res.json())
+    .catch(() => ({})); // if file doesn't exist, just return empty object
   const actionsData = await fetch(actionsURL)
     .then((res) => res.json())
-    .catch(() => [EMPTY_ACTION]);
+    .catch(() => [EMPTY_ACTION]); // if actions don't exist, just return a single empty action
   const chatgptData = await fetch(chatgptURL)
     .then((res) => res.json())
     .catch(() => EMPTY_CHATGPT_RESPONSE); // if chatgpt summary doesn't exist, just return empty summary
 
   // Pass the fetched data to the page via props
+
   return {
     props: {
       fileData,

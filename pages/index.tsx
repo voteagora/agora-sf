@@ -1,7 +1,4 @@
 import Container from "../components/container";
-import MoreStories from "../components/more-stories";
-import HeroPost from "../components/hero-post";
-import Intro from "../components/intro";
 import Layout from "../components/layout";
 import { getAllPosts } from "../lib/api";
 import Head from "next/head";
@@ -12,6 +9,7 @@ import fetch from "node-fetch";
 import Link from "next/link";
 import Header from "../components/header";
 import { extractAndFormatDate } from "../lib/dates";
+import Footer from "../components/footer";
 
 type Props = {
   allPosts: Post[];
@@ -32,24 +30,45 @@ export default function Index({ allPosts, meetingsData }: Props) {
               <div className="border-b px-4 py-2 text-sm font-medium text-stone-600">
                 On {meeting.meetingDate}, the Board voted
               </div>
-              {meeting.files.map((item, j) => (
-                <Link as={`/items/${item["File #"]}`} href={"/items/[id]"}>
-                  <div
-                    key={item["File #"]}
-                    className="border-b bg-white px-4 py-4"
-                  >
-                    <p className="text-xs font-medium uppercase text-green-600">
-                      {item.Status}
-                    </p>
-                    <h2 className="line-clamp-1 font-medium">{item.Name}</h2>
-                    <div className="line-clamp-2 text-stone-600">
-                      {item.Title}
-                    </div>
-                  </div>
-                </Link>
-              ))}
+              {meeting.files.some((item) => item.Type === "Ordinance") ? (
+                meeting.files.map(
+                  (item, j) =>
+                    item.Type === "Ordinance" && (
+                      <Link
+                        as={`/items/${item["File #"]}`}
+                        href={"/items/[id]"}
+                      >
+                        <div
+                          key={item["File #"]}
+                          className="border-b bg-white px-4 py-4"
+                        >
+                          <p
+                            className={`text-xs font-medium uppercase ${
+                              item.Status === "Passed"
+                                ? "text-green-600"
+                                : "text-stone-600"
+                            }`}
+                          >
+                            {item.Status}
+                          </p>
+                          <h2 className="line-clamp-1 font-medium">
+                            {item.Name}
+                          </h2>
+                          <div className="line-clamp-2 text-stone-600">
+                            {item.Title}
+                          </div>
+                        </div>
+                      </Link>
+                    ),
+                )
+              ) : (
+                <div className="bg-white px-4 py-4 text-stone-600">
+                  No ordinances at this meeting
+                </div>
+              )}
             </div>
           ))}
+          <Footer />
         </Container>
       </Layout>
     </>
