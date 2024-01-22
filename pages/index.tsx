@@ -1,7 +1,4 @@
 import Container from "../components/container";
-import MoreStories from "../components/more-stories";
-import HeroPost from "../components/hero-post";
-import Intro from "../components/intro";
 import Layout from "../components/layout";
 import { getAllPosts } from "../lib/api";
 import Head from "next/head";
@@ -11,6 +8,7 @@ import path from "path";
 import fetch from "node-fetch";
 import Link from "next/link";
 import Header from "../components/header";
+import Footer from "../components/footer";
 
 type Props = {
   allPosts: Post[];
@@ -55,6 +53,7 @@ export default function Index({ allPosts, meetingsData }: Props) {
               )}
             </div>
           ))}
+          <Footer />
         </Container>
       </Layout>
     </>

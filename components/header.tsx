@@ -7,7 +7,7 @@ const Header = () => {
       <Link href="/">
         <div className="font-medium cursor-pointer">SF Agora</div>
       </Link>
-      <div className="text-stone-600">Ordinances</div>
+      <div className="text-stone-600">Ordinances by the SF BOS</div>
     </section>
   );
 };

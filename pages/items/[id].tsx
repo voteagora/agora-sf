@@ -1,9 +1,9 @@
 import Layout from "../../components/layout";
 import Container from "../../components/container";
-import { useRouter } from "next/router";
 import fs from "fs";
 import path from "path";
 import Header from "../../components/header";
+import Footer from "../../components/footer";
 
 type Props = {
   fileData: any;
@@ -114,6 +114,7 @@ export default function ItemPage({
             ))}
           </section>
         )}
+        <Footer />
       </Container>
     </Layout>
   );
