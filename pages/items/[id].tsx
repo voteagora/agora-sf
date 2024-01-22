@@ -30,16 +30,12 @@ export default function ItemPage({
   chatgptData,
 }: Props) {
   const emptyActions = actionsData.length === undefined;
-  console.log(fileData);
-  console.log(actionsData);
-  console.log(chatgptData);
   // Verify that every element in chatgptData is a string
   Object.keys(chatgptData).forEach((key) => {
-    if (typeof chatgptData[key] !== 'string') {
-      chatgptData[key] = 'N/A';
+    if (typeof chatgptData[key] !== "string") {
+      chatgptData[key] = "N/A";
     }
   });
-  console.log(chatgptData)
 
   let lastVote;
   if (!emptyActions) {
@@ -135,7 +131,7 @@ export async function getStaticProps({ params }) {
     .catch(() => ({})); // if file doesn't exist, just return empty object
   const actionsData = await fetch(actionsURL)
     .then((res) => res.json())
-    .catch(() => ({})); // if actions data doesn't exist, just return empty object
+    .catch(() => [EMPTY_ACTION]); // if actions don't exist, just return a single empty action
   const chatgptData = await fetch(chatgptURL)
     .then((res) => res.json())
     .catch(() => EMPTY_CHATGPT_RESPONSE); // if chatgpt summary doesn't exist, just return empty summary

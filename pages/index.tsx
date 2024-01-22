@@ -8,6 +8,7 @@ import path from "path";
 import fetch from "node-fetch";
 import Link from "next/link";
 import Header from "../components/header";
+import { extractAndFormatDate } from "../lib/dates";
 import Footer from "../components/footer";
 
 type Props = {
@@ -27,29 +28,43 @@ export default function Index({ allPosts, meetingsData }: Props) {
           {meetingsData.map((meeting, i) => (
             <div key={i}>
               <div className="border-b px-4 py-2 text-sm font-medium text-stone-600">
-                On November 14 2023, the Board voted
+                On {meeting.meetingDate}, the Board voted
               </div>
-              {meeting.some((item) => item.Type === "Ordinance") ? (
-                meeting.map((item, j) => (
-                  item.Type === "Ordinance" && (
-                    <Link as={`/items/${item["File #"]}`} href={"/items/[id]"}>
-                      <div
-                        key={item["File #"]}
-                        className="border-b bg-white px-4 py-4"
+              {meeting.files.some((item) => item.Type === "Ordinance") ? (
+                meeting.files.map(
+                  (item, j) =>
+                    item.Type === "Ordinance" && (
+                      <Link
+                        as={`/items/${item["File #"]}`}
+                        href={"/items/[id]"}
                       >
-                        <p className={`text-xs font-medium uppercase ${item.Status === "Passed" ? "text-green-600" : "text-stone-600"}`}>
-                          {item.Status}
-                        </p>
-                        <h2 className="line-clamp-1 font-medium">{item.Name}</h2>
-                        <div className="line-clamp-2 text-stone-600">
-                          {item.Title}
+                        <div
+                          key={item["File #"]}
+                          className="border-b bg-white px-4 py-4"
+                        >
+                          <p
+                            className={`text-xs font-medium uppercase ${
+                              item.Status === "Passed"
+                                ? "text-green-600"
+                                : "text-stone-600"
+                            }`}
+                          >
+                            {item.Status}
+                          </p>
+                          <h2 className="line-clamp-1 font-medium">
+                            {item.Name}
+                          </h2>
+                          <div className="line-clamp-2 text-stone-600">
+                            {item.Title}
+                          </div>
                         </div>
-                      </div>
-                    </Link>
-                  )
-                ))
+                      </Link>
+                    ),
+                )
               ) : (
-                <div className="text-stone-600 bg-white px-4 py-4">No ordinances at this meeting</div>
+                <div className="bg-white px-4 py-4 text-stone-600">
+                  No ordinances at this meeting
+                </div>
               )}
             </div>
           ))}
@@ -77,11 +92,24 @@ export const getStaticProps = async () => {
   );
   const urls = JSON.parse(data);
 
-  // Fetch data from each URL
+  // sort urls in reverse chronological order
+  const sortedUrls = urls.sort((a, b) => {
+    const aDate = new Date(extractAndFormatDate(a));
+    const bDate = new Date(extractAndFormatDate(b));
+    return bDate.getTime() - aDate.getTime();
+  });
+
+  // Fetch a list of files from each meeting URL
   const meetingsData = await Promise.all(
-    urls.map(async (url) => {
+    sortedUrls.map(async (url) => {
       const response = await fetch(url);
-      return response.json();
+      const files: any[] = (await response.json()) as any[];
+      const meetingDate = extractAndFormatDate(url);
+
+      return {
+        files,
+        meetingDate,
+      };
     }),
   );
 
