@@ -12,11 +12,10 @@ import { extractAndFormatDate } from "../lib/dates";
 import Footer from "../components/footer";
 
 type Props = {
-  allPosts: Post[];
   meetingsData: any;
 };
 
-export default function Index({ allPosts, meetingsData }: Props) {
+export default function Index({ meetingsData }: Props) {
   return (
     <>
       <Layout>
