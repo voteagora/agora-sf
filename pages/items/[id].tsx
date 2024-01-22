@@ -30,6 +30,16 @@ export default function ItemPage({
   chatgptData,
 }: Props) {
   const emptyActions = actionsData.length === undefined;
+  console.log(fileData);
+  console.log(actionsData);
+  console.log(chatgptData);
+  // Verify that every element in chatgptData is a string
+  Object.keys(chatgptData).forEach((key) => {
+    if (typeof chatgptData[key] !== 'string') {
+      chatgptData[key] = 'N/A';
+    }
+  });
+  console.log(chatgptData)
 
   let lastVote;
   if (!emptyActions) {
