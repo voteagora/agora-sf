@@ -85,7 +85,6 @@ export const getStaticProps = async () => {
       return response.json();
     }),
   );
-  console.log(meetingsData);
 
   return {
     props: { allPosts, meetingsData },
