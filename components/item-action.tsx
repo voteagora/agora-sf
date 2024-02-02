@@ -39,7 +39,16 @@ const ItemAction = ({ action }: Props) => {
       <div className="text-sm text-stone-600">
         {toLocaleDateString(meetingDate)} {actionTaken} by {actionBy}
       </div>
-      {votes.length > 0 && <div className="text-sm text-stone-600">Votes</div>}
+      {votes.length > 0 && (
+        <div className="text-sm text-stone-600">
+          Vote:{" "}
+          <span
+            className={result === "Fail" ? "text-red-600" : "text-green-600"}
+          >
+            {result}
+          </span>{" "}
+        </div>
+      )}
       {votes.map((vote, index) => (
         <div key={index} className="flex justify-between text-sm font-medium">
           <span>{vote.person}</span>
