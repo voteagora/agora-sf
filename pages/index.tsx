@@ -8,7 +8,7 @@ import path from "path";
 import fetch from "node-fetch";
 import Link from "next/link";
 import Header from "../components/header";
-import { extractAndFormatDate } from "../lib/dates";
+import { extractAndFormatDate, extractMeetingName } from "../lib/parsing";
 import Footer from "../components/footer";
 
 type Props = {
@@ -27,7 +27,7 @@ export default function Index({ meetingsData }: Props) {
           {meetingsData.map((meeting, i) => (
             <div key={i}>
               <div className="border-b px-4 py-2 text-sm font-medium text-stone-600">
-                On {meeting.meetingDate}, the Board voted
+                On {meeting.date}, the {meeting.name} voted
               </div>
               {meeting.files.some((item) => item.Type === "Ordinance") ? (
                 meeting.files.map(
@@ -103,11 +103,13 @@ export const getStaticProps = async () => {
     sortedUrls.map(async (url) => {
       const response = await fetch(url);
       const files: any[] = (await response.json()) as any[];
-      const meetingDate = extractAndFormatDate(url);
+      const date = extractAndFormatDate(url);
+      const name = extractMeetingName(url);
 
       return {
         files,
-        meetingDate,
+        date,
+        name,
       };
     }),
   );
