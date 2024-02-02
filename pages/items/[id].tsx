@@ -135,7 +135,7 @@ export async function getStaticProps({ params }) {
 
 export async function getStaticPaths() {
   const data = fs.readFileSync(
-    path.join(process.cwd(), "_data", "meetings_small.json"),
+    path.join(process.cwd(), "_data", "meetings.json"),
     "utf8",
   );
   const urls = JSON.parse(data);
