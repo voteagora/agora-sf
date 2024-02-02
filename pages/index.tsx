@@ -86,7 +86,7 @@ export const getStaticProps = async () => {
 
   // Read the JSON file
   const data = fs.readFileSync(
-    path.join(process.cwd(), "_data", "meetings.json"),
+    path.join(process.cwd(), "_data", "meetings_small.json"),
     "utf8",
   );
   const urls = JSON.parse(data);

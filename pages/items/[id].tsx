@@ -4,10 +4,11 @@ import fs from "fs";
 import path from "path";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
+import ItemAction from "../../components/item-action";
 
 type Props = {
   fileData: any;
-  actionsData: any;
+  actionsData: any[];
   chatgptData: any;
 };
 
@@ -88,25 +89,10 @@ export default function ItemPage({
           </div>
         </section>
         {!emptyActions && (
-          <section className="mx-4 mb-8 mt-4 flex flex-col gap-2 rounded-lg border bg-white p-4">
-            <div className="text-sm text-stone-600">
-              How the board voted on the latest version
-            </div>
-
-            {lastVote.votes.map((vote, index) => (
-              <div
-                key={index}
-                className="flex justify-between text-sm font-medium"
-              >
-                <span>{vote.person}</span>
-                <span
-                  className={
-                    vote.vote === "No" ? "text-red-600" : "text-green-600"
-                  }
-                >
-                  {vote.vote}
-                </span>
-              </div>
+          <section className="mx-4 mb-8 mt-4 flex flex-col gap-2 rounded-lg border">
+            <div className="text-l mx-4 mt-4 text-stone-600">Timeline</div>
+            {actionsData.map((action) => (
+              <ItemAction action={action}></ItemAction>
             ))}
           </section>
         )}
@@ -149,7 +135,7 @@ export async function getStaticProps({ params }) {
 
 export async function getStaticPaths() {
   const data = fs.readFileSync(
-    path.join(process.cwd(), "_data", "meetings.json"),
+    path.join(process.cwd(), "_data", "meetings_small.json"),
     "utf8",
   );
   const urls = JSON.parse(data);
